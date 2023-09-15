@@ -21,12 +21,21 @@ class ItemController extends Controller
     /**
      * 商品一覧
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        if ($search) {
+            $items = Item::where('name', 'like', "%{$search}%")->orderBy('created_at', 'asc')->get();
+        } else {
+            $items = Item::orderBy('created_at', 'asc')->get();
+        }
+        return view('item.index', [
+            'items' => $items,
+        ]);
         // 商品一覧取得
-        $items = Item::all();
+        // $items = Item::all();
 
-        return view('item.index', compact('items'));
+        // return view('item.index', compact('items'));
     }
 
     /**
@@ -53,5 +62,41 @@ class ItemController extends Controller
         }
 
         return view('item.add');
+    }
+//編集
+public function edit(Request $request){
+    $item = Item::where('id','=', $request->id)->first();
+    
+    return view('item.edit')->with([
+        'item'=> $item,
+    ]);
+}
+
+
+//編集してから保存する
+    public function update(Request $request){
+        $request->validate( [
+            'name' => 'required|max:100'
+            
+        ]);
+        $item = Item::where('id','=',$request->id)->first();
+        $item->name =$request->name;
+        $item->type =$request->type;
+        $item->detail =$request->detail;
+        $item->save();
+
+        return redirect('/items');
+}
+
+    /**
+     * 商品削除
+     */
+    public function delete(Request $request)
+    {
+        $item = Item::where('id','=',$request->id);
+        $item->delete();
+
+        return redirect('/items');
+
     }
 }

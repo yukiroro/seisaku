@@ -7,6 +7,12 @@
 @stop
 
 @section('content')
+<div class="kensaku">
+        <form action="{{ route('index') }}" method="get">
+            <input type="text" name="search" class=form-group placeholder="商品名で検索">
+            <button type="submit" class="btn1">検索</button>
+        </form>
+    </div>
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -15,7 +21,7 @@
                     <div class="card-tools">
                         <div class="input-group input-group-sm">
                             <div class="input-group-append">
-                                <a href="{{ url('items/add') }}" class="btn btn-default">商品登録</a>
+                                <a href="{{ route('add') }}" class="btn btn-default">商品登録</a>
                             </div>
                         </div>
                     </div>
@@ -37,6 +43,15 @@
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->type }}</td>
                                     <td>{{ $item->detail }}</td>
+                                    <td><a href="{{ route('edit', ['id' => $item->id]) }}"> >>編集 </a></td>
+                                    <td>
+                                        <form action="{{ route('delete') }}" method="POST"
+                                            onsubmit="return confirm('削除します。よろしいですか？');">
+                                            @csrf
+                                            <input type="hidden" name="id" value="{{ $item->id }}">
+                                            <input type="submit" value="削除" class="btn btn-danger">
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
